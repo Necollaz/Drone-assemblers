@@ -1,7 +1,7 @@
 using UnityEngine;
 using _Project.Scripts.Gameplay.GameResource.Config;
 
-namespace _Project.Scripts.Gameplay.GameResource
+namespace _Project.Scripts.Gameplay.GameResource.Spawner
 {
     public class ResourceSpawnGroupComponent : MonoBehaviour
     {

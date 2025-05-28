@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using _Project.Scripts.Gameplay.Common;
 using _Project.Scripts.Gameplay.Drone.Config;
-using _Project.Scripts.Gameplay.Drone.Features;
 
 namespace _Project.Scripts.Gameplay.Drone
 {
@@ -12,79 +11,75 @@ namespace _Project.Scripts.Gameplay.Drone
     [RequireComponent(typeof(LineRenderer))]
     public class DroneView : MonoBehaviour
     {
-        [SerializeField] private NavMeshAgent _agent;
+        [SerializeField] private LineRenderer _pathRenderer;
 
-        private DroneMovement _movement;
         private Renderer _renderer;
-        private LineRenderer _pathRenderer;
-        private Vector3[] _lastPathCorners = new Vector3[0];
-        
-        public NavMeshAgent Agent => _agent;
-        
-        public event Action Arrived;
+        private Coroutine _gatherRoutine;
+        private Coroutine _unloadRoutine;
+
+        public NavMeshAgent Agent { get; private set; }
         public event Action GatherComplete;
         public event Action UnloadComplete;
 
+        private void Awake()
+        {
+            Agent = GetComponent<NavMeshAgent>();
+            _pathRenderer = GetComponent<LineRenderer>();
+            _renderer = GetComponentInChildren<Renderer>();
+        }
+
+        private void Update()
+        {
+            _pathRenderer.enabled = DebugSettings.ShowDronePaths;
+
+            if (DebugSettings.ShowDronePaths && Agent.hasPath)
+            {
+                Vector3[] corners = Agent.path.corners;
+
+                _pathRenderer.positionCount = corners.Length;
+                _pathRenderer.SetPositions(corners);
+            }
+        }
+
         public void Initialize(DroneConfig config)
         {
-            _agent = GetComponent<NavMeshAgent>();
-            _pathRenderer = GetComponent<LineRenderer>();
-
-            _agent.speed = config.Speed;
-            _agent.acceleration = config.Acceleration;
-            _agent.angularSpeed = config.AngularSpeed;
-            _agent.stoppingDistance = config.StoppingDistance;
-            _agent.updatePosition = true;
-            _agent.updateRotation = true;
-            _agent.updateUpAxis = true;
-
-
-            _movement = new DroneMovement(_agent);
-            _movement.Arrived += () => Arrived?.Invoke();
+            Agent.speed = config.Speed;
+            Agent.acceleration = config.Acceleration;
+            Agent.angularSpeed = config.AngularSpeed;
+            Agent.stoppingDistance = config.StoppingDistance;
+            Agent.autoBraking = true;
+            Agent.updatePosition = true;
+            Agent.updateRotation = true;
+            Agent.updateUpAxis = true;
             
             _pathRenderer.positionCount = 0;
             _pathRenderer.enabled = DebugSettings.ShowDronePaths;
         }
 
-        public void MoveTo(Vector3 worldPosition)
+        public void RenderPath(Vector3[] corners)
         {
-            NavMeshPath path = new NavMeshPath();
-            
-            _agent.CalculatePath(worldPosition, path);
-            _lastPathCorners = path.corners;
-            
-            _pathRenderer.positionCount = _lastPathCorners.Length;
-            _pathRenderer.SetPositions(_lastPathCorners);
-
-            _movement.Moving(worldPosition);
-        }
-
-        public void Tick()
-        {
-            _movement.Tick();
-            
-            _pathRenderer.enabled = DebugSettings.ShowDronePaths;
+            _pathRenderer.positionCount = corners.Length;
+            _pathRenderer.SetPositions(corners);
         }
 
         public void Gather(float duration)
         {
-            _movement.StopMoving();
+            if (_gatherRoutine != null)
+                StopCoroutine(_gatherRoutine);
 
-            StartCoroutine(Delayed(duration, () => GatherComplete?.Invoke()));
+            _gatherRoutine = StartCoroutine(Delayed(duration, () => { GatherComplete?.Invoke(); }));
         }
 
         public void Unload(float duration)
         {
-            _movement.StopMoving();
+            if (_unloadRoutine != null)
+                StopCoroutine(_unloadRoutine);
 
-            StartCoroutine(Delayed(duration, () => UnloadComplete?.Invoke()));
+            _unloadRoutine = StartCoroutine(Delayed(duration, () => { UnloadComplete?.Invoke(); }));
         }
-        
+
         public void SetMaterial(Material material)
         {
-            if (_renderer == null)
-                _renderer = GetComponentInChildren<Renderer>();
-
             if (_renderer != null && material != null)
                 _renderer.material = material;
         }

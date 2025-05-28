@@ -2,9 +2,8 @@ using UnityEngine;
 using TMPro;
 using _Project.Scripts.Gameplay.Base;
 
-namespace _Project.Scripts.Gameplay.GameResource
+namespace _Project.Scripts.Gameplay.GameResource.UI
 {
-    
     [RequireComponent(typeof(BaseComponent))]
     public class ResourceCounter : MonoBehaviour
     {
