@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6a83312846143ffa4ce5e3cff5c1aad, type: 3}
+  m_Name: ResourceDefinition
+  m_EditorClassIdentifier: 
+  _prefab: {fileID: 4383956465933232883, guid: 9d5b65d876b18104b9483bff62f99114, type: 3}
+  _spawnEffectPrefab: {fileID: 4658810173335608889, guid: 84438118265761341b2039fcb3d9f3ec,
+    type: 3}
+  _resourceName: Metall
+  _minAmount: 1
+  _maxAmount: 5
