@@ -1378,7 +1378,7 @@ Transform:
   m_GameObject: {fileID: 182163069}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 10, z: 300}
+  m_LocalPosition: {x: 0, y: 0, z: 300}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1852,7 +1852,6 @@ MonoBehaviour:
   _bases:
   - {fileID: 2072415964}
   - {fileID: 283529529}
-  _droneCount: 3
   _poolSize: 20
   _baseCountDropdowns:
   - {fileID: 218156652}
@@ -3311,7 +3310,7 @@ Transform:
   m_GameObject: {fileID: 525359681}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 10, z: -300}
+  m_LocalPosition: {x: 0, y: 0, z: -300}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5212,7 +5211,7 @@ Transform:
   m_GameObject: {fileID: 948160428}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 95, y: 4, z: 265}
+  m_LocalPosition: {x: 95, y: 0, z: 265}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6514,7 +6513,7 @@ Transform:
   m_GameObject: {fileID: 1321703187}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 87.4, y: 4.3, z: -260.4}
+  m_LocalPosition: {x: 87.4, y: 0, z: -260.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

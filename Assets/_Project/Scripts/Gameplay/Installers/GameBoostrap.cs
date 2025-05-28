@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,7 +8,10 @@ using _Project.Scripts.Gameplay.Common;
 using _Project.Scripts.Gameplay.Controllers;
 using _Project.Scripts.Gameplay.Drone;
 using _Project.Scripts.Gameplay.Drone.Config;
+using _Project.Scripts.Gameplay.Drone.Spawner;
 using _Project.Scripts.Gameplay.GameResource;
+using _Project.Scripts.Gameplay.GameResource.Common;
+using _Project.Scripts.Gameplay.GameResource.Spawner;
 using _Project.Scripts.Gameplay.UI;
 
 namespace _Project.Scripts.Gameplay.Installers
@@ -28,7 +32,6 @@ namespace _Project.Scripts.Gameplay.Installers
         [SerializeField] private DroneConfig _droneConfig;
         [SerializeField] private DroneView _dronePrefab;
         [SerializeField] private List<BaseComponent> _bases;
-        [SerializeField, Min(1)] private int _droneCount = 3;
 
         [Header("Pool settings")]
         [SerializeField, Min(1)] private int _poolSize = 20;
@@ -41,11 +44,13 @@ namespace _Project.Scripts.Gameplay.Installers
         [SerializeField] private Button _applySpawnIntervalBtn;
         [SerializeField] private Toggle _showPathsToggle;
         
-        private ResourceSpawnerController _resourceSpawner;
+        private readonly List<IDisposable> _uiHandlers = new();
+        
+        private ResourceSpawner _resourceSpawner;
+        private ResourcePool _resourcePool;
         private StaticMeshInstancerController _meshInstancer;
-        private DroneSpawnerController _droneSpawner;
-        private GameUIConfigurator _gameUIConfigurator;
-
+        private DroneSpawner _droneSpawner;
+        
         private void Awake()
         {
             InitializeComponents();
@@ -63,9 +68,11 @@ namespace _Project.Scripts.Gameplay.Installers
         
         private void InitializeComponents()
         {
-            _resourceSpawner = new ResourceSpawnerController(_spawnPoints, _poolParent, _poolSize);
+            _resourceSpawner = new ResourceSpawner(_spawnPoints, _poolParent, _poolSize);
             _resourceSpawner.InitializePools();
             _resourceSpawner.SpawnAllGroups(this);
+            
+            _resourcePool = new ResourcePool(_resourceSpawner.AllResources);
             
             _meshInstancer = new StaticMeshInstancerController(_mainCamera, _sharedMesh, _sharedMaterial, _instancesRoot);
             _meshInstancer.Enable();
@@ -74,8 +81,6 @@ namespace _Project.Scripts.Gameplay.Installers
             
             foreach (BaseComponent baseComponent in _bases)
             {
-                baseComponent.InitializeHoldPoints();
-                
                 ParticleSystem effectPrefab = baseComponent.ReceiveEffectPrefab;
                 
                 if (effectPrefab != null && !basePools.ContainsKey(effectPrefab))
@@ -83,10 +88,18 @@ namespace _Project.Scripts.Gameplay.Installers
             }
             
             foreach (BaseComponent baseComponent in _bases)
-                baseComponent.SetReceivePool(basePools[baseComponent.ReceiveEffectPrefab]);
+                baseComponent.Initialize(basePools[baseComponent.ReceiveEffectPrefab]);
             
-            _droneSpawner = new DroneSpawnerController(_dronePrefab, _droneConfig, _bases, _resourceSpawner.AllResources, transform);
-            _gameUIConfigurator = new GameUIConfigurator(_baseCountDropdowns, _bases, _speedSlider, _speedValueLabel, _spawnIntervalInput, _applySpawnIntervalBtn, _showPathsToggle, _droneSpawner, _resourceSpawner);
+            _droneSpawner = new DroneSpawner(_dronePrefab, _droneConfig, _bases, _resourcePool, transform);
+            
+            for (int i = 0; i < _bases.Count && i < _baseCountDropdowns.Count; i++)
+            {
+                _uiHandlers.Add(new DroneCountDropdownUI(_baseCountDropdowns[i], _bases[i], _droneSpawner));
+            }
+            
+            _uiHandlers.Add(new SpeedSliderUI(_speedSlider, _speedValueLabel, _droneSpawner));
+            _uiHandlers.Add(new SpawnIntervalUI(_spawnIntervalInput, _applySpawnIntervalBtn, _resourceSpawner));
+            _uiHandlers.Add(new DebugToggleUI(_showPathsToggle));
         }
     }
 }

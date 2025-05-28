@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DroneConfig
   m_EditorClassIdentifier: 
   _speed: 50
-  _acceleration: 20
+  _acceleration: 70
   _angularSpeed: 360
   _stoppingDistance: 0.1
   _gatherDuration: 2

@@ -4,12 +4,11 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using _Project.Scripts.Gameplay.Common;
-using _Project.Scripts.Gameplay.GameResource;
 using _Project.Scripts.Gameplay.GameResource.Config;
 
-namespace _Project.Scripts.Gameplay.Controllers
+namespace _Project.Scripts.Gameplay.GameResource.Spawner
 {
-    public class ResourceSpawnerController
+    public class ResourceSpawner
     {
         public readonly List<ResourceModel> AllResources = new();
         
@@ -21,7 +20,7 @@ namespace _Project.Scripts.Gameplay.Controllers
         private Dictionary<ParticleSystem, ObjectPool<ParticleSystem>> _effectPools;
         private float _spawnInterval;
         
-        public ResourceSpawnerController(List<ResourceSpawnGroupComponent> spawnPoints, Transform poolParent, int poolSize)
+        public ResourceSpawner(List<ResourceSpawnGroupComponent> spawnPoints, Transform poolParent, int poolSize)
         {
             _spawnPoints = spawnPoints;
             _poolParent = poolParent;
@@ -34,6 +33,8 @@ namespace _Project.Scripts.Gameplay.Controllers
             _resourcePool = new ObjectPool<ResourceModel>(anyGroup.ResourceDefinitions[0].Prefab, _poolSize, _poolParent);
             _effectPools = new Dictionary<ParticleSystem, ObjectPool<ParticleSystem>>();
 
+            _spawnInterval = anyGroup.SpawnInterval;
+            
             foreach (ResourceSpawnGroupComponent point in _spawnPoints)
             {
                 foreach (ResourceDefinition definition in point.GroupData.ResourceDefinitions)

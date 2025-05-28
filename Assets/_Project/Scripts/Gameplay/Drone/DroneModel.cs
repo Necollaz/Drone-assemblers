@@ -6,26 +6,30 @@ namespace _Project.Scripts.Gameplay.Drone
 {
     public class DroneModel
     {
-        public DroneModel(BaseComponent homeBase) =>  HomeBase = homeBase;
-        
-        public DroneState CurrentDroneState { get; private set; } = DroneState.Idle;
+        public DroneModel(BaseComponent homeBase) => HomeBase = homeBase;
+
+        public DroneState CurrentState { get; private set; } = DroneState.Idle;
         public ResourceModel TargetResource { get; private set; }
         public BaseComponent HomeBase { get; }
 
         public void SetTarget(ResourceModel resource)
         {
             TargetResource = resource;
-            CurrentDroneState = DroneState.ToResource;
+            CurrentState = DroneState.ToResource;
         }
 
-        public void StartGathering() => CurrentDroneState = DroneState.Gathering;
-
-        public void WaitUnload() => CurrentDroneState = DroneState.WaitingUnload;
-        
-        public void ReturnHome() => CurrentDroneState = DroneState.ToBase;
-
-        public void StartUnloading() => CurrentDroneState = DroneState.Unloading;
-
-        public void FinishUnloading() => CurrentDroneState = DroneState.Idle;
+        public void SetState(DroneState newState, ResourceModel resource = null)
+        {
+            CurrentState = newState;
+            
+            if (newState == DroneState.ToResource && resource != null)
+            {
+                TargetResource = resource;
+            }
+            else if (newState == DroneState.Idle)
+            {
+                TargetResource = null;
+            }
+        }
     }
 }
